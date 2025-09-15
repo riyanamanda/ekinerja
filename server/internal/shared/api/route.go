@@ -4,17 +4,20 @@ import (
 	"log"
 
 	"github.com/labstack/echo/v4"
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat"
 	"github.com/riyanamanda/ekinerja/internal/shared/config"
 	"github.com/riyanamanda/ekinerja/internal/shared/database"
 )
 
 func RouteSetups(app *echo.Echo, cfg *config.Config) {
-	_, err := database.GetDatabase(cfg.Database)
+	conn, err := database.GetDatabase(cfg.Database)
 	if err != nil {
 		log.Fatal("Database connection error: ", err)
 	}
 
-	app.GET("/", func(c echo.Context) error {
-		return c.String(200, "Hello, World!")
-	})
+	api := app.Group("/api")
+
+	pangkatRepository := pangkat.NewPangkatRepository(conn)
+	pangkatService := pangkat.NewPangkatService(pangkatRepository)
+	pangkat.NewPangkatHandler(api, pangkatService)
 }
