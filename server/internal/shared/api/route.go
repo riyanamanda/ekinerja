@@ -13,4 +13,8 @@ func RouteSetups(app *echo.Echo, cfg *config.Config) {
 	if err != nil {
 		log.Fatal("Database connection error: ", err)
 	}
+
+	app.GET("/", func(c echo.Context) error {
+		return c.String(200, "Hello, World!")
+	})
 }
