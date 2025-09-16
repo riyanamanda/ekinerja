@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
 	"github.com/riyanamanda/ekinerja/internal/shared/response"
+	"github.com/riyanamanda/ekinerja/internal/shared/validation"
 )
 
 type pangkatHandler struct {
@@ -43,6 +44,10 @@ func (h *pangkatHandler) Save(c echo.Context) error {
 	var request dto.PangkatRequest
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
+	}
+
+	if validationErrors := validation.Validate(request); len(validationErrors) > 0 {
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
 	if err := h.service.Save(ctx, request); err != nil {
@@ -84,6 +89,10 @@ func (h *pangkatHandler) Update(c echo.Context) error {
 	var request dto.PangkatRequest
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
+	}
+
+	if validationErrors := validation.Validate(request); len(validationErrors) > 0 {
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
 	if err := h.service.Update(ctx, id, request); err != nil {

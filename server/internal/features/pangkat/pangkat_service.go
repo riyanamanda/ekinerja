@@ -36,9 +36,11 @@ func (p *pangkatService) GetAll(ctx context.Context) ([]dto.PangkatResponse, err
 }
 
 func (p *pangkatService) Save(ctx context.Context, request dto.PangkatRequest) error {
-	return p.repo.Save(ctx, Pangkat{
+	pangkat := Pangkat{
 		Nama: request.Nama,
-	})
+	}
+
+	return p.repo.Save(ctx, &pangkat)
 }
 
 func (p *pangkatService) GetById(ctx context.Context, id int64) (*dto.PangkatResponse, error) {

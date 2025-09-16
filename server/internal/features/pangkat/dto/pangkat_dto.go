@@ -10,5 +10,5 @@ type PangkatResponse struct {
 }
 
 type PangkatRequest struct {
-	Nama string `json:"nama" validate:"required"`
+	Nama string `json:"nama" validate:"required,min=3,max=100"`
 }

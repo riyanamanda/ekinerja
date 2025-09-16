@@ -37,7 +37,7 @@ func (r *pangkatRepository) GetById(ctx context.Context, id int64) (*Pangkat, er
 	return &pangkat, err
 }
 
-func (r *pangkatRepository) Save(ctx context.Context, pangkat Pangkat) error {
+func (r *pangkatRepository) Save(ctx context.Context, pangkat *Pangkat) error {
 	err := r.DB.WithContext(ctx).Create(&pangkat).Error
 	if err != nil {
 		logrus.Errorf("Error saving Pangkat: %v", err)
