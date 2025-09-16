@@ -3,10 +3,12 @@ package pangkat
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
+	"github.com/riyanamanda/ekinerja/internal/shared/response"
 )
 
 type pangkatHandler struct {
@@ -18,17 +20,20 @@ func NewPangkatHandler(app *echo.Group, service PangkatService) {
 
 	app.GET("/pangkat", Handler.GetAll)
 	app.POST("/pangkat", Handler.Save)
+	app.GET("/pangkat/:id", Handler.GetById)
+	app.PUT("/pangkat/:id", Handler.Update)
+	app.DELETE("/pangkat/:id", Handler.Delete)
 }
 
 func (h *pangkatHandler) GetAll(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
-	responses, err := h.service.GetAll(ctx)
+	pangkatList, err := h.service.GetAll(ctx)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, responses)
+	return c.JSON(http.StatusOK, response.CreatePaginationResponse(pangkatList))
 }
 
 func (h *pangkatHandler) Save(c echo.Context) error {
@@ -37,12 +42,68 @@ func (h *pangkatHandler) Save(c echo.Context) error {
 
 	var request dto.PangkatRequest
 	if err := c.Bind(&request); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
 	}
 
 	if err := h.service.Save(ctx, request); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
+	}
+	return c.JSON(http.StatusOK, response.CreateSuccessResponse("Pangkat berhasil ditambahkan"))
+}
+
+func (h *pangkatHandler) GetById(c echo.Context) error {
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
+	defer cancel()
+
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
+	}
+	pangkat, err := h.service.GetById(ctx, id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "success"})
+	if pangkat == nil {
+		return c.JSON(http.StatusOK, map[string]any{})
+	}
+	return c.JSON(http.StatusOK, pangkat)
+}
+
+func (h *pangkatHandler) Update(c echo.Context) error {
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
+	defer cancel()
+
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
+	}
+
+	var request dto.PangkatRequest
+	if err := c.Bind(&request); err != nil {
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
+	}
+
+	if err := h.service.Update(ctx, id, request); err != nil {
+		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
+	}
+	return c.JSON(http.StatusOK, response.CreateSuccessResponse("Pangkat berhasil diperbaharui"))
+}
+
+func (h *pangkatHandler) Delete(c echo.Context) error {
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
+	defer cancel()
+
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
+	}
+
+	if err := h.service.Delete(ctx, id); err != nil {
+		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
+	}
+	return c.JSON(http.StatusOK, response.CreateSuccessResponse("Pangkat berhasil dihapus"))
 }

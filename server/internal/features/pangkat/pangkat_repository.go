@@ -2,6 +2,7 @@ package pangkat
 
 import (
 	"context"
+	"errors"
 
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -24,13 +25,16 @@ func (r *pangkatRepository) GetAll(ctx context.Context) ([]Pangkat, error) {
 	return pangkatList, err
 }
 
-func (r *pangkatRepository) GetById(ctx context.Context, id int64) (Pangkat, error) {
+func (r *pangkatRepository) GetById(ctx context.Context, id int64) (*Pangkat, error) {
 	var pangkat Pangkat
-	err := r.DB.WithContext(ctx).Where("id = ?", id).First(&pangkat).Error
+	err := r.DB.WithContext(ctx).First(&pangkat, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		logrus.Errorf("Error getting Pangkat by id %d: %v", id, err)
 	}
-	return pangkat, err
+	return &pangkat, err
 }
 
 func (r *pangkatRepository) Save(ctx context.Context, pangkat Pangkat) error {

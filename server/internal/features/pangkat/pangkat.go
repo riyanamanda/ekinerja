@@ -21,7 +21,7 @@ func (Pangkat) TableName() string {
 type PangkatRepository interface {
 	GetAll(ctx context.Context) ([]Pangkat, error)
 	Save(ctx context.Context, pangkat Pangkat) error
-	GetById(ctx context.Context, id int64) (Pangkat, error)
+	GetById(ctx context.Context, id int64) (*Pangkat, error)
 	Update(ctx context.Context, id int64, pangkat map[string]any) error
 	Delete(ctx context.Context, id int64) error
 }
@@ -29,7 +29,7 @@ type PangkatRepository interface {
 type PangkatService interface {
 	GetAll(ctx context.Context) ([]dto.PangkatResponse, error)
 	Save(ctx context.Context, request dto.PangkatRequest) error
-	GetById(ctx context.Context, id int64) (dto.PangkatResponse, error)
+	GetById(ctx context.Context, id int64) (*dto.PangkatResponse, error)
 	Update(ctx context.Context, id int64, request dto.PangkatRequest) error
 	Delete(ctx context.Context, id int64) error
 }

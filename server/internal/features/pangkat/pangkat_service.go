@@ -41,17 +41,22 @@ func (p *pangkatService) Save(ctx context.Context, request dto.PangkatRequest) e
 	})
 }
 
-func (p *pangkatService) GetById(ctx context.Context, id int64) (dto.PangkatResponse, error) {
+func (p *pangkatService) GetById(ctx context.Context, id int64) (*dto.PangkatResponse, error) {
 	pangkat, err := p.repo.GetById(ctx, id)
 	if err != nil {
-		return dto.PangkatResponse{}, err
+		return nil, err
 	}
-	return dto.PangkatResponse{
+
+	if pangkat == nil {
+		return nil, nil
+	}
+	response := &dto.PangkatResponse{
 		ID:        pangkat.ID,
 		Nama:      pangkat.Nama,
 		CreatedAt: pangkat.CreatedAt,
 		UpdatedAt: pangkat.UpdatedAt,
-	}, nil
+	}
+	return response, nil
 }
 
 func (p *pangkatService) Update(ctx context.Context, id int64, request dto.PangkatRequest) error {
