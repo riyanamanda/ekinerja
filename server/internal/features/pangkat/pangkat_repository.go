@@ -2,9 +2,7 @@ package pangkat
 
 import (
 	"context"
-	"errors"
 
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -18,45 +16,28 @@ func NewPangkatRepository(db *gorm.DB) PangkatRepository {
 
 func (r *pangkatRepository) GetAll(ctx context.Context) ([]Pangkat, error) {
 	var pangkatList []Pangkat
-	err := r.DB.WithContext(ctx).Find(&pangkatList).Error
-	if err != nil {
-		logrus.Errorf("Error getting all Pangkat: %v", err)
+	if err := r.DB.WithContext(ctx).Find(&pangkatList).Error; err != nil {
+		return nil, err
 	}
-	return pangkatList, err
+	return pangkatList, nil
 }
 
-func (r *pangkatRepository) GetById(ctx context.Context, id int64) (*Pangkat, error) {
+func (r *pangkatRepository) GetById(ctx context.Context, id int64) (Pangkat, error) {
 	var pangkat Pangkat
-	err := r.DB.WithContext(ctx).First(&pangkat, id).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		logrus.Errorf("Error getting Pangkat by id %d: %v", id, err)
+	if err := r.DB.WithContext(ctx).First(&pangkat, id).Error; err != nil {
+		return Pangkat{}, err
 	}
-	return &pangkat, err
+	return pangkat, nil
 }
 
-func (r *pangkatRepository) Save(ctx context.Context, pangkat *Pangkat) error {
-	err := r.DB.WithContext(ctx).Create(&pangkat).Error
-	if err != nil {
-		logrus.Errorf("Error saving Pangkat: %v", err)
-	}
-	return err
+func (r *pangkatRepository) Save(ctx context.Context, pangkat Pangkat) error {
+	return r.DB.WithContext(ctx).Create(&pangkat).Error
 }
 
 func (r *pangkatRepository) Update(ctx context.Context, id int64, pangkat map[string]any) error {
-	err := r.DB.WithContext(ctx).Model(&Pangkat{}).Where("id = ?", id).Updates(pangkat).Error
-	if err != nil {
-		logrus.Errorf("Error updating Pangkat id %d: %v", id, err)
-	}
-	return err
+	return r.DB.WithContext(ctx).Model(&Pangkat{}).Where("id = ?", id).Updates(pangkat).Error
 }
 
 func (r *pangkatRepository) Delete(ctx context.Context, id int64) error {
-	err := r.DB.WithContext(ctx).Where("id = ?", id).Delete(&Pangkat{}).Error
-	if err != nil {
-		logrus.Errorf("Error deleting Pangkat id %d: %v", id, err)
-	}
-	return err
+	return r.DB.WithContext(ctx).Where("id = ?", id).Delete(&Pangkat{}).Error
 }

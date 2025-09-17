@@ -2,7 +2,6 @@ package pangkat
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
@@ -13,9 +12,7 @@ type pangkatService struct {
 }
 
 func NewPangkatService(repo PangkatRepository) PangkatService {
-	return &pangkatService{
-		repo: repo,
-	}
+	return &pangkatService{repo: repo}
 }
 
 func (p *pangkatService) GetAll(ctx context.Context) ([]dto.PangkatResponse, error) {
@@ -23,55 +20,48 @@ func (p *pangkatService) GetAll(ctx context.Context) ([]dto.PangkatResponse, err
 	if err != nil {
 		return nil, err
 	}
-	responses := make([]dto.PangkatResponse, len(pangkatList))
-	for i, pangkat := range pangkatList {
-		responses[i] = dto.PangkatResponse{
-			ID:        pangkat.ID,
-			Nama:      pangkat.Nama,
-			CreatedAt: pangkat.CreatedAt,
-			UpdatedAt: pangkat.UpdatedAt,
-		}
-	}
-	return responses, nil
+	return mapToResponses(pangkatList), nil
 }
 
 func (p *pangkatService) Save(ctx context.Context, request dto.PangkatRequest) error {
-	pangkat := Pangkat{
-		Nama: request.Nama,
-	}
-
-	return p.repo.Save(ctx, &pangkat)
+	pangkat := Pangkat{Nama: request.Nama}
+	return p.repo.Save(ctx, pangkat)
 }
 
-func (p *pangkatService) GetById(ctx context.Context, id int64) (*dto.PangkatResponse, error) {
+func (p *pangkatService) GetById(ctx context.Context, id int64) (dto.PangkatResponse, error) {
 	pangkat, err := p.repo.GetById(ctx, id)
 	if err != nil {
-		return nil, err
+		return dto.PangkatResponse{}, err
 	}
+	return mapToResponse(pangkat), nil
+}
 
-	if pangkat == nil {
-		return nil, nil
+func (p *pangkatService) Update(ctx context.Context, id int64, request dto.PangkatRequest) error {
+	updates := map[string]any{
+		"Nama":      request.Nama,
+		"UpdatedAt": time.Now(),
 	}
-	response := &dto.PangkatResponse{
+	return p.repo.Update(ctx, id, updates)
+}
+
+func (p *pangkatService) Delete(ctx context.Context, id int64) error {
+	return p.repo.Delete(ctx, id)
+}
+
+// Helper functions
+func mapToResponses(list []Pangkat) []dto.PangkatResponse {
+	responses := make([]dto.PangkatResponse, len(list))
+	for i, pangkat := range list {
+		responses[i] = mapToResponse(pangkat)
+	}
+	return responses
+}
+
+func mapToResponse(pangkat Pangkat) dto.PangkatResponse {
+	return dto.PangkatResponse{
 		ID:        pangkat.ID,
 		Nama:      pangkat.Nama,
 		CreatedAt: pangkat.CreatedAt,
 		UpdatedAt: pangkat.UpdatedAt,
 	}
-	return response, nil
-}
-
-func (p *pangkatService) Update(ctx context.Context, id int64, request dto.PangkatRequest) error {
-	_, err := p.repo.GetById(ctx, id)
-	if err != nil {
-		return err
-	}
-	return p.repo.Update(ctx, id, map[string]any{
-		"Nama":      request.Nama,
-		"UpdatedAt": sql.NullTime{Time: time.Now(), Valid: true},
-	})
-}
-
-func (p *pangkatService) Delete(ctx context.Context, id int64) error {
-	return p.repo.Delete(ctx, id)
 }

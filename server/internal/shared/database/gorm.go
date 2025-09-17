@@ -7,7 +7,6 @@ import (
 	"github.com/riyanamanda/ekinerja/internal/shared/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 func GetDatabase(cfg config.Database) (*gorm.DB, error) {
@@ -20,7 +19,7 @@ func GetDatabase(cfg config.Database) (*gorm.DB, error) {
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Warn),
+		TranslateError: true,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
@@ -31,7 +30,6 @@ func GetDatabase(cfg config.Database) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to get database instance: %w", err)
 	}
 
-	// Set connection pool settings
 	sqlDB.SetMaxIdleConns(25)
 	sqlDB.SetMaxOpenConns(25)
 	sqlDB.SetConnMaxLifetime(5 * time.Minute)
