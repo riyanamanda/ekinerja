@@ -32,11 +32,23 @@ func (h *pangkatHandler) GetAll(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
-	pangkatList, err := h.service.GetAll(ctx)
+	pageStr := c.QueryParam("page")
+	perPageStr := c.QueryParam("per_page")
+	page := 1
+	perPage := 10
+	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+		page = p
+	}
+	if pp, err := strconv.Atoi(perPageStr); err == nil && pp > 0 {
+		perPage = pp
+	}
+
+	pangkatList, total, err := h.service.GetAll(ctx, page, perPage)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, response.CreatePaginationResponse(pangkatList))
+	resp := response.CreatePaginationResponse(pangkatList, page, perPage, total)
+	return c.JSON(http.StatusOK, resp)
 }
 
 func (h *pangkatHandler) Save(c echo.Context) error {

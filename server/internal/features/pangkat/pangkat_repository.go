@@ -14,9 +14,10 @@ func NewPangkatRepository(db *gorm.DB) PangkatRepository {
 	return &pangkatRepository{DB: db}
 }
 
-func (r *pangkatRepository) GetAll(ctx context.Context) ([]Pangkat, error) {
+func (r *pangkatRepository) GetAll(ctx context.Context, page, perPage int) ([]Pangkat, error) {
 	var pangkatList []Pangkat
-	if err := r.DB.WithContext(ctx).Find(&pangkatList).Error; err != nil {
+	offset := (page - 1) * perPage
+	if err := r.DB.WithContext(ctx).Limit(perPage).Offset(offset).Find(&pangkatList).Error; err != nil {
 		return nil, err
 	}
 	return pangkatList, nil
@@ -40,4 +41,12 @@ func (r *pangkatRepository) Update(ctx context.Context, id int64, pangkat map[st
 
 func (r *pangkatRepository) Delete(ctx context.Context, id int64) error {
 	return r.DB.WithContext(ctx).Where("id = ?", id).Delete(&Pangkat{}).Error
+}
+
+func (r *pangkatRepository) Count(ctx context.Context) (int64, error) {
+	var count int64
+	if err := r.DB.WithContext(ctx).Model(&Pangkat{}).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }

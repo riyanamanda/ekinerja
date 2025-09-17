@@ -19,7 +19,8 @@ func (Pangkat) TableName() string {
 }
 
 type PangkatRepository interface {
-	GetAll(ctx context.Context) ([]Pangkat, error)
+	GetAll(ctx context.Context, page, perPage int) ([]Pangkat, error)
+	Count(ctx context.Context) (int64, error)
 	Save(ctx context.Context, pangkat Pangkat) error
 	GetById(ctx context.Context, id int64) (Pangkat, error)
 	Update(ctx context.Context, id int64, pangkat map[string]any) error
@@ -27,7 +28,7 @@ type PangkatRepository interface {
 }
 
 type PangkatService interface {
-	GetAll(ctx context.Context) ([]dto.PangkatResponse, error)
+	GetAll(ctx context.Context, page, perPage int) ([]dto.PangkatResponse, int64, error)
 	Save(ctx context.Context, request dto.PangkatRequest) error
 	GetById(ctx context.Context, id int64) (dto.PangkatResponse, error)
 	Update(ctx context.Context, id int64, request dto.PangkatRequest) error
