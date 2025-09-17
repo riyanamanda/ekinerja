@@ -110,7 +110,8 @@ func (h *pangkatHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
-	if err := h.service.Update(ctx, id, request); err != nil {
+	err = h.service.Update(ctx, id, request)
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Pangkat tidak ditemukan"))
 		} else if errors.Is(err, gorm.ErrDuplicatedKey) {
@@ -131,7 +132,8 @@ func (h *pangkatHandler) Delete(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
 	}
 
-	if err := h.service.Delete(ctx, id); err != nil {
+	err = h.service.Delete(ctx, id)
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Pangkat tidak ditemukan"))
 		}

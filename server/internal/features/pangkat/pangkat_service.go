@@ -39,6 +39,9 @@ func (p *pangkatService) GetById(ctx context.Context, id int64) (PangkatResponse
 }
 
 func (p *pangkatService) Update(ctx context.Context, id int64, request PangkatRequest) error {
+	if _, err := p.repo.GetById(ctx, id); err != nil {
+		return err
+	}
 	updates := map[string]any{
 		"Nama":      request.Nama,
 		"UpdatedAt": time.Now(),
