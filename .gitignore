@@ -58,3 +58,4 @@ test/
 .env
 client/.env
 server/.env
+server/tmp
