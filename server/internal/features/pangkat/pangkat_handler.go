@@ -23,7 +23,7 @@ func NewPangkatHandler(app *echo.Group, service model.PangkatService) {
 	Handler := &pangkatHandler{service: service}
 
 	app.GET("/pangkat", Handler.GetAll)
-	app.POST("/pangkat", Handler.Save)
+	app.POST("/pangkat", Handler.Create)
 	app.GET("/pangkat/:id", Handler.GetById)
 	app.PUT("/pangkat/:id", Handler.Update)
 	app.DELETE("/pangkat/:id", Handler.Delete)
@@ -52,7 +52,7 @@ func (h *pangkatHandler) GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
-func (h *pangkatHandler) Save(c echo.Context) error {
+func (h *pangkatHandler) Create(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
@@ -71,7 +71,7 @@ func (h *pangkatHandler) Save(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, response.CreateSuccessResponse("Pangkat berhasil ditambahkan"))
+	return c.JSON(http.StatusCreated, response.CreateSuccessResponse("Pangkat berhasil ditambahkan"))
 }
 
 func (h *pangkatHandler) GetById(c echo.Context) error {
@@ -121,7 +121,7 @@ func (h *pangkatHandler) Update(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, response.CreateSuccessResponse("Pangkat berhasil diperbaharui"))
+	return c.JSON(http.StatusAccepted, response.CreateSuccessResponse("Pangkat berhasil diperbaharui"))
 }
 
 func (h *pangkatHandler) Delete(c echo.Context) error {
