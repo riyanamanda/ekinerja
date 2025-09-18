@@ -2,7 +2,10 @@ package pangkat
 
 import (
 	"context"
+	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type pangkatService struct {
@@ -26,6 +29,13 @@ func (p *pangkatService) GetAll(ctx context.Context, page, perPage int) ([]Pangk
 }
 
 func (p *pangkatService) Save(ctx context.Context, request PangkatRequest) error {
+	isUnique, err := p.repo.IsPangkatUnique(ctx, request.Nama)
+	if err != nil {
+		return err
+	}
+	if !isUnique {
+		return gorm.ErrDuplicatedKey
+	}
 	pangkat := Pangkat{Nama: request.Nama}
 	return p.repo.Save(ctx, pangkat)
 }
@@ -39,8 +49,18 @@ func (p *pangkatService) GetById(ctx context.Context, id int64) (PangkatResponse
 }
 
 func (p *pangkatService) Update(ctx context.Context, id int64, request PangkatRequest) error {
-	if _, err := p.repo.GetById(ctx, id); err != nil {
+	existing, err := p.repo.GetById(ctx, id)
+	if err != nil {
 		return err
+	}
+	if !strings.EqualFold(existing.Nama, request.Nama) {
+		isUnique, err := p.repo.IsPangkatUnique(ctx, request.Nama)
+		if err != nil {
+			return err
+		}
+		if !isUnique {
+			return gorm.ErrDuplicatedKey
+		}
 	}
 	updates := map[string]any{
 		"Nama":      request.Nama,

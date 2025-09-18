@@ -31,6 +31,14 @@ func (r *pangkatRepository) GetById(ctx context.Context, id int64) (Pangkat, err
 	return pangkat, nil
 }
 
+func (r *pangkatRepository) GetByName(ctx context.Context, name string) (Pangkat, error) {
+	var pangkat Pangkat
+	if err := r.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", name).First(&pangkat).Error; err != nil {
+		return Pangkat{}, err
+	}
+	return pangkat, nil
+}
+
 func (r *pangkatRepository) Save(ctx context.Context, pangkat Pangkat) error {
 	return r.DB.WithContext(ctx).Create(&pangkat).Error
 }
@@ -49,4 +57,12 @@ func (r *pangkatRepository) Count(ctx context.Context) (int64, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (r *pangkatRepository) IsPangkatUnique(ctx context.Context, nama string) (bool, error) {
+	var count int64
+	if err := r.DB.WithContext(ctx).Model(&Pangkat{}).Where("LOWER(nama) = LOWER(?)", nama).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count == 0, nil
 }
