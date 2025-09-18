@@ -15,10 +15,10 @@ func NewBidangRepository(db *gorm.DB) model.BidangRepository {
 	return &bidangRepository{DB: db}
 }
 
-func (b *bidangRepository) GetAll(ctx context.Context, page int, perPage int) ([]model.Bidang, error) {
+func (b *bidangRepository) GetAll(ctx context.Context, page int, size int) ([]model.Bidang, error) {
 	var list []model.Bidang
-	offset := (page - 1) * perPage
-	if err := b.DB.WithContext(ctx).Limit(perPage).Offset(offset).Find(&list).Error; err != nil {
+	offset := (page - 1) * size
+	if err := b.DB.WithContext(ctx).Limit(size).Offset(offset).Find(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil

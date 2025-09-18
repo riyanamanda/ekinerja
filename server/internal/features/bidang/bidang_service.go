@@ -19,8 +19,8 @@ func NewBidangService(repo model.BidangRepository) model.BidangService {
 	return &bidangService{repo: repo}
 }
 
-func (b *bidangService) GetAll(ctx context.Context, page int, perPage int) ([]dto.BidangResponse, int64, error) {
-	list, err := b.repo.GetAll(ctx, page, perPage)
+func (b *bidangService) GetAll(ctx context.Context, page int, size int) ([]dto.BidangResponse, int64, error) {
+	list, err := b.repo.GetAll(ctx, page, size)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -15,10 +15,10 @@ func NewPangkatRepository(db *gorm.DB) model.PangkatRepository {
 	return &pangkatRepository{DB: db}
 }
 
-func (r *pangkatRepository) GetAll(ctx context.Context, page, perPage int) ([]model.Pangkat, error) {
+func (r *pangkatRepository) GetAll(ctx context.Context, page, size int) ([]model.Pangkat, error) {
 	var pangkatList []model.Pangkat
-	offset := (page - 1) * perPage
-	if err := r.DB.WithContext(ctx).Limit(perPage).Offset(offset).Find(&pangkatList).Error; err != nil {
+	offset := (page - 1) * size
+	if err := r.DB.WithContext(ctx).Limit(size).Offset(offset).Find(&pangkatList).Error; err != nil {
 		return nil, err
 	}
 	return pangkatList, nil

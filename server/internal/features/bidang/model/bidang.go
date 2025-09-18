@@ -19,7 +19,7 @@ func (Bidang) TableName() string {
 }
 
 type BidangRepository interface {
-	GetAll(ctx context.Context, page int, perPage int) ([]Bidang, error)
+	GetAll(ctx context.Context, page int, size int) ([]Bidang, error)
 	Save(ctx context.Context, bidang Bidang) error
 	GetById(ctx context.Context, id int64) (Bidang, error)
 	GetByName(ctx context.Context, name string) (Bidang, error)
@@ -30,7 +30,7 @@ type BidangRepository interface {
 }
 
 type BidangService interface {
-	GetAll(ctx context.Context, page int, perPage int) ([]dto.BidangResponse, int64, error)
+	GetAll(ctx context.Context, page int, size int) ([]dto.BidangResponse, int64, error)
 	GetById(ctx context.Context, id int64) (dto.BidangResponse, error)
 	GetByName(ctx context.Context, name string) (dto.BidangResponse, error)
 	Save(ctx context.Context, request dto.BidangRequest) error

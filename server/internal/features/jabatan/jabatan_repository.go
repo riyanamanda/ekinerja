@@ -15,10 +15,10 @@ func NewJabatanRepository(db *gorm.DB) model.JabatanRepository {
 	return &jabatanRepository{DB: db}
 }
 
-func (j *jabatanRepository) GetAll(ctx context.Context, page int, perPage int) ([]model.Jabatan, error) {
+func (j *jabatanRepository) GetAll(ctx context.Context, page int, size int) ([]model.Jabatan, error) {
 	var list []model.Jabatan
-	offset := (page - 1) * perPage
-	if err := j.DB.WithContext(ctx).Limit(perPage).Offset(offset).Find(&list).Error; err != nil {
+	offset := (page - 1) * size
+	if err := j.DB.WithContext(ctx).Limit(size).Offset(offset).Find(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil

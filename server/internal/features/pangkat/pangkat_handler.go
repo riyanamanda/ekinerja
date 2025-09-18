@@ -34,20 +34,20 @@ func (h *pangkatHandler) GetAll(c echo.Context) error {
 	defer cancel()
 
 	pageStr := c.QueryParam("page")
-	perPageStr := c.QueryParam("per_page")
-	page, perPage := 1, 10
+	sizeStr := c.QueryParam("size")
+	page, size := 1, 10
 	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
 		page = p
 	}
-	if pp, err := strconv.Atoi(perPageStr); err == nil && pp > 0 {
-		perPage = pp
+	if pp, err := strconv.Atoi(sizeStr); err == nil && pp > 0 {
+		size = pp
 	}
 
-	list, total, err := h.service.GetAll(ctx, page, perPage)
+	list, total, err := h.service.GetAll(ctx, page, size)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, response.CreatePaginationResponse(list, page, perPage, total))
+	return c.JSON(http.StatusOK, response.CreatePaginationResponse(list, page, size, total))
 }
 
 func (h *pangkatHandler) Create(c echo.Context) error {

@@ -19,8 +19,8 @@ func NewPangkatService(repo model.PangkatRepository) model.PangkatService {
 	return &pangkatService{repo: repo}
 }
 
-func (p *pangkatService) GetAll(ctx context.Context, page, perPage int) ([]dto.PangkatResponse, int64, error) {
-	list, err := p.repo.GetAll(ctx, page, perPage)
+func (p *pangkatService) GetAll(ctx context.Context, page, size int) ([]dto.PangkatResponse, int64, error) {
+	list, err := p.repo.GetAll(ctx, page, size)
 	if err != nil {
 		return nil, 0, err
 	}

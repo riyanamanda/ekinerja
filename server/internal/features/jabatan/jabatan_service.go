@@ -19,8 +19,8 @@ func NewJabatanService(repo model.JabatanRepository) model.JabatanService {
 	return &jabatanService{repo: repo}
 }
 
-func (j *jabatanService) GetAll(ctx context.Context, page int, perPage int) ([]dto.JabatanResponse, int64, error) {
-	list, err := j.repo.GetAll(ctx, page, perPage)
+func (j *jabatanService) GetAll(ctx context.Context, page int, size int) ([]dto.JabatanResponse, int64, error) {
+	list, err := j.repo.GetAll(ctx, page, size)
 	if err != nil {
 		return nil, 0, err
 	}
