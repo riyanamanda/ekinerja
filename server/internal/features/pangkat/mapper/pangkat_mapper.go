@@ -14,5 +14,10 @@ func MapToListResponse(list []model.Pangkat) []dto.PangkatResponse {
 }
 
 func MapToPangkatResponse(pangkat model.Pangkat) dto.PangkatResponse {
-	return dto.PangkatResponse(pangkat)
+	return dto.PangkatResponse{
+		ID:        pangkat.ID,
+		Nama:      pangkat.Nama,
+		CreatedAt: pangkat.CreatedAt,
+		UpdatedAt: pangkat.UpdatedAt,
+	}
 }

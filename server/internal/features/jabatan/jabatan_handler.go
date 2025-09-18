@@ -37,8 +37,7 @@ func (h *jabatanHandler) GetAll(c echo.Context) error {
 
 	pageStr := c.QueryParam("page")
 	perPageStr := c.QueryParam("per_page")
-	page := 1
-	perPage := 10
+	page, perPage := 1, 10
 	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
 		page = p
 	}
@@ -47,14 +46,13 @@ func (h *jabatanHandler) GetAll(c echo.Context) error {
 	}
 	list, total, err := h.service.GetAll(c.Request().Context(), page, perPage)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	resp := response.CreatePaginationResponse(list, page, perPage, total)
-	return c.JSON(http.StatusOK, resp)
+	return c.JSON(http.StatusOK, response.CreatePaginationResponse(list, page, perPage, total))
 }
 
 func (h *jabatanHandler) Create(c echo.Context) error {
-	_, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
 	var request dto.JabatanRequest
@@ -66,7 +64,7 @@ func (h *jabatanHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
-	if err := h.service.Save(c.Request().Context(), request); err != nil {
+	if err := h.service.Save(ctx, request); err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("jabatan dengan nama tersebut sudah ada"))
 		}

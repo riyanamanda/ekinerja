@@ -14,5 +14,10 @@ func MapToListResponse(list []model.Jabatan) []dto.JabatanResponse {
 }
 
 func MapToJabatanResponse(jabatan model.Jabatan) dto.JabatanResponse {
-	return dto.JabatanResponse(jabatan)
+	return dto.JabatanResponse{
+		ID:        jabatan.ID,
+		Nama:      jabatan.Nama,
+		CreatedAt: jabatan.CreatedAt,
+		UpdatedAt: jabatan.UpdatedAt,
+	}
 }

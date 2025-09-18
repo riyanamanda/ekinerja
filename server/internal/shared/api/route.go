@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/labstack/echo/v4"
+	"github.com/riyanamanda/ekinerja/internal/features/bidang"
 	"github.com/riyanamanda/ekinerja/internal/features/jabatan"
 	"github.com/riyanamanda/ekinerja/internal/features/pangkat"
 	"github.com/riyanamanda/ekinerja/internal/shared/config"
@@ -25,4 +26,8 @@ func RouteSetups(app *echo.Echo, cfg *config.Config) {
 	jabatanRepository := jabatan.NewJabatanRepository(conn)
 	jabatanService := jabatan.NewJabatanService(jabatanRepository)
 	jabatan.NewJabatanHandler(api, jabatanService)
+
+	bidangRepository := bidang.NewBidangRepository(conn)
+	bidangService := bidang.NewBidangService(bidangRepository)
+	bidang.NewBidangHandler(api, bidangService)
 }
