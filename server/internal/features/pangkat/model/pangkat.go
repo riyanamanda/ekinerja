@@ -1,8 +1,10 @@
-package pangkat
+package model
 
 import (
 	"context"
 	"time"
+
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
 )
 
 type Pangkat struct {
@@ -28,9 +30,9 @@ type PangkatRepository interface {
 }
 
 type PangkatService interface {
-	GetAll(ctx context.Context, page, perPage int) ([]PangkatResponse, int64, error)
-	Save(ctx context.Context, request PangkatRequest) error
-	GetById(ctx context.Context, id int64) (PangkatResponse, error)
-	Update(ctx context.Context, id int64, request PangkatRequest) error
+	GetAll(ctx context.Context, page, perPage int) ([]dto.PangkatResponse, int64, error)
+	Save(ctx context.Context, request dto.PangkatRequest) error
+	GetById(ctx context.Context, id int64) (dto.PangkatResponse, error)
+	Update(ctx context.Context, id int64, request dto.PangkatRequest) error
 	Delete(ctx context.Context, id int64) error
 }

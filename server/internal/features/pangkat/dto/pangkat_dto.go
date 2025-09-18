@@ -1,4 +1,4 @@
-package pangkat
+package dto
 
 import "time"
 

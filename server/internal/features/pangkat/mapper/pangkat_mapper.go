@@ -1,13 +1,18 @@
-package pangkat
+package mapper
 
-func MapToListResponse(list []Pangkat) []PangkatResponse {
-	responses := make([]PangkatResponse, len(list))
+import (
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/model"
+)
+
+func MapToListResponse(list []model.Pangkat) []dto.PangkatResponse {
+	responses := make([]dto.PangkatResponse, len(list))
 	for i, pangkat := range list {
 		responses[i] = MapToPangkatResponse(pangkat)
 	}
 	return responses
 }
 
-func MapToPangkatResponse(pangkat Pangkat) PangkatResponse {
-	return PangkatResponse(pangkat)
+func MapToPangkatResponse(pangkat model.Pangkat) dto.PangkatResponse {
+	return dto.PangkatResponse(pangkat)
 }

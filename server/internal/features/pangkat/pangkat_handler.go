@@ -8,16 +8,18 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/model"
 	"github.com/riyanamanda/ekinerja/internal/shared/response"
 	"github.com/riyanamanda/ekinerja/internal/shared/validation"
 	"gorm.io/gorm"
 )
 
 type pangkatHandler struct {
-	service PangkatService
+	service model.PangkatService
 }
 
-func NewPangkatHandler(app *echo.Group, service PangkatService) {
+func NewPangkatHandler(app *echo.Group, service model.PangkatService) {
 	Handler := &pangkatHandler{service: service}
 
 	app.GET("/pangkat", Handler.GetAll)
@@ -54,7 +56,7 @@ func (h *pangkatHandler) Save(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
-	var request PangkatRequest
+	var request dto.PangkatRequest
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
 	}
@@ -101,7 +103,7 @@ func (h *pangkatHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
 	}
 
-	var request PangkatRequest
+	var request dto.PangkatRequest
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
 	}

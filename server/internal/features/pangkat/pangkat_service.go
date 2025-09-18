@@ -5,18 +5,21 @@ import (
 	"strings"
 	"time"
 
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/mapper"
+	"github.com/riyanamanda/ekinerja/internal/features/pangkat/model"
 	"gorm.io/gorm"
 )
 
 type pangkatService struct {
-	repo PangkatRepository
+	repo model.PangkatRepository
 }
 
-func NewPangkatService(repo PangkatRepository) PangkatService {
+func NewPangkatService(repo model.PangkatRepository) model.PangkatService {
 	return &pangkatService{repo: repo}
 }
 
-func (p *pangkatService) GetAll(ctx context.Context, page, perPage int) ([]PangkatResponse, int64, error) {
+func (p *pangkatService) GetAll(ctx context.Context, page, perPage int) ([]dto.PangkatResponse, int64, error) {
 	list, err := p.repo.GetAll(ctx, page, perPage)
 	if err != nil {
 		return nil, 0, err
@@ -25,10 +28,10 @@ func (p *pangkatService) GetAll(ctx context.Context, page, perPage int) ([]Pangk
 	if err != nil {
 		return nil, 0, err
 	}
-	return MapToListResponse(list), total, nil
+	return mapper.MapToListResponse(list), total, nil
 }
 
-func (p *pangkatService) Save(ctx context.Context, request PangkatRequest) error {
+func (p *pangkatService) Save(ctx context.Context, request dto.PangkatRequest) error {
 	isUnique, err := p.repo.IsPangkatUnique(ctx, request.Nama)
 	if err != nil {
 		return err
@@ -36,19 +39,19 @@ func (p *pangkatService) Save(ctx context.Context, request PangkatRequest) error
 	if !isUnique {
 		return gorm.ErrDuplicatedKey
 	}
-	pangkat := Pangkat{Nama: request.Nama}
+	pangkat := model.Pangkat{Nama: request.Nama}
 	return p.repo.Save(ctx, pangkat)
 }
 
-func (p *pangkatService) GetById(ctx context.Context, id int64) (PangkatResponse, error) {
+func (p *pangkatService) GetById(ctx context.Context, id int64) (dto.PangkatResponse, error) {
 	pangkat, err := p.repo.GetById(ctx, id)
 	if err != nil {
-		return PangkatResponse{}, err
+		return dto.PangkatResponse{}, err
 	}
-	return MapToPangkatResponse(pangkat), nil
+	return mapper.MapToPangkatResponse(pangkat), nil
 }
 
-func (p *pangkatService) Update(ctx context.Context, id int64, request PangkatRequest) error {
+func (p *pangkatService) Update(ctx context.Context, id int64, request dto.PangkatRequest) error {
 	existing, err := p.repo.GetById(ctx, id)
 	if err != nil {
 		return err
