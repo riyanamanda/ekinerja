@@ -24,24 +24,24 @@ func (b *bidangRepository) GetAll(ctx context.Context, page int, size int) ([]mo
 	return list, nil
 }
 
-func (b *bidangRepository) Save(ctx context.Context, bidang model.Bidang) error {
-	return b.DB.WithContext(ctx).Create(&bidang).Error
+func (b *bidangRepository) Save(ctx context.Context, bidang *model.Bidang) error {
+	return b.DB.WithContext(ctx).Create(bidang).Error
 }
 
-func (b *bidangRepository) GetById(ctx context.Context, id int64) (model.Bidang, error) {
+func (b *bidangRepository) GetById(ctx context.Context, id int64) (*model.Bidang, error) {
 	var bidang model.Bidang
 	if err := b.DB.WithContext(ctx).First(&bidang, id).Error; err != nil {
-		return model.Bidang{}, err
+		return nil, err
 	}
-	return bidang, nil
+	return &bidang, nil
 }
 
-func (b *bidangRepository) GetByName(ctx context.Context, name string) (model.Bidang, error) {
+func (b *bidangRepository) GetByName(ctx context.Context, name string) (*model.Bidang, error) {
 	var bidang model.Bidang
 	if err := b.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", name).First(&bidang).Error; err != nil {
-		return model.Bidang{}, err
+		return nil, err
 	}
-	return bidang, nil
+	return &bidang, nil
 }
 
 func (b *bidangRepository) Update(ctx context.Context, id int64, bidang map[string]any) error {

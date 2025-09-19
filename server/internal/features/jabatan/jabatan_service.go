@@ -36,7 +36,10 @@ func (j *jabatanService) GetById(ctx context.Context, id int) (dto.JabatanRespon
 	if err != nil {
 		return dto.JabatanResponse{}, err
 	}
-	return mapper.MapToJabatanResponse(jabatan), nil
+	if jabatan == nil {
+		return dto.JabatanResponse{}, gorm.ErrRecordNotFound
+	}
+	return mapper.MapToJabatanResponse(*jabatan), nil
 }
 
 func (j *jabatanService) GetByName(ctx context.Context, name string) (dto.JabatanResponse, error) {
@@ -44,7 +47,10 @@ func (j *jabatanService) GetByName(ctx context.Context, name string) (dto.Jabata
 	if err != nil {
 		return dto.JabatanResponse{}, err
 	}
-	return mapper.MapToJabatanResponse(jabatan), nil
+	if jabatan == nil {
+		return dto.JabatanResponse{}, gorm.ErrRecordNotFound
+	}
+	return mapper.MapToJabatanResponse(*jabatan), nil
 }
 
 func (j *jabatanService) Save(ctx context.Context, request dto.JabatanRequest) error {
@@ -55,7 +61,7 @@ func (j *jabatanService) Save(ctx context.Context, request dto.JabatanRequest) e
 	if !isUnique {
 		return gorm.ErrDuplicatedKey
 	}
-	jabatan := model.Jabatan{Nama: request.Nama}
+	jabatan := &model.Jabatan{Nama: request.Nama}
 	return j.repo.Save(ctx, jabatan)
 }
 
@@ -63,6 +69,9 @@ func (j *jabatanService) Update(ctx context.Context, id int, request dto.Jabatan
 	existing, err := j.repo.GetById(ctx, id)
 	if err != nil {
 		return err
+	}
+	if existing == nil {
+		return gorm.ErrRecordNotFound
 	}
 	if !strings.EqualFold(existing.Nama, request.Nama) {
 		isUnique, err := j.repo.IsJabatanUnique(ctx, request.Nama)
@@ -81,8 +90,12 @@ func (j *jabatanService) Update(ctx context.Context, id int, request dto.Jabatan
 }
 
 func (j *jabatanService) Delete(ctx context.Context, id int) error {
-	if _, err := j.repo.GetById(ctx, id); err != nil {
+	jabatan, err := j.repo.GetById(ctx, id)
+	if err != nil {
 		return err
+	}
+	if jabatan == nil {
+		return gorm.ErrRecordNotFound
 	}
 	return j.repo.Delete(ctx, id)
 }

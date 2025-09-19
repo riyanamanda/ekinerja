@@ -39,7 +39,7 @@ func (p *pangkatService) Save(ctx context.Context, request dto.PangkatRequest) e
 	if !isUnique {
 		return gorm.ErrDuplicatedKey
 	}
-	pangkat := model.Pangkat{Nama: request.Nama}
+	pangkat := &model.Pangkat{Nama: request.Nama}
 	return p.repo.Save(ctx, pangkat)
 }
 
@@ -48,13 +48,19 @@ func (p *pangkatService) GetById(ctx context.Context, id int64) (dto.PangkatResp
 	if err != nil {
 		return dto.PangkatResponse{}, err
 	}
-	return mapper.MapToPangkatResponse(pangkat), nil
+	if pangkat == nil {
+		return dto.PangkatResponse{}, gorm.ErrRecordNotFound
+	}
+	return mapper.MapToPangkatResponse(*pangkat), nil
 }
 
 func (p *pangkatService) Update(ctx context.Context, id int64, request dto.PangkatRequest) error {
 	existing, err := p.repo.GetById(ctx, id)
 	if err != nil {
 		return err
+	}
+	if existing == nil {
+		return gorm.ErrRecordNotFound
 	}
 	if !strings.EqualFold(existing.Nama, request.Nama) {
 		isUnique, err := p.repo.IsPangkatUnique(ctx, request.Nama)
@@ -73,8 +79,12 @@ func (p *pangkatService) Update(ctx context.Context, id int64, request dto.Pangk
 }
 
 func (p *pangkatService) Delete(ctx context.Context, id int64) error {
-	if _, err := p.repo.GetById(ctx, id); err != nil {
+	pangkat, err := p.repo.GetById(ctx, id)
+	if err != nil {
 		return err
+	}
+	if pangkat == nil {
+		return gorm.ErrRecordNotFound
 	}
 	return p.repo.Delete(ctx, id)
 }

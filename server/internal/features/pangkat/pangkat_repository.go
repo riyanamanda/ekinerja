@@ -24,24 +24,24 @@ func (r *pangkatRepository) GetAll(ctx context.Context, page, size int) ([]model
 	return pangkatList, nil
 }
 
-func (r *pangkatRepository) GetById(ctx context.Context, id int64) (model.Pangkat, error) {
+func (r *pangkatRepository) GetById(ctx context.Context, id int64) (*model.Pangkat, error) {
 	var pangkat model.Pangkat
 	if err := r.DB.WithContext(ctx).First(&pangkat, id).Error; err != nil {
-		return model.Pangkat{}, err
+		return nil, err
 	}
-	return pangkat, nil
+	return &pangkat, nil
 }
 
-func (r *pangkatRepository) GetByName(ctx context.Context, name string) (model.Pangkat, error) {
+func (r *pangkatRepository) GetByName(ctx context.Context, name string) (*model.Pangkat, error) {
 	var pangkat model.Pangkat
 	if err := r.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", name).First(&pangkat).Error; err != nil {
-		return model.Pangkat{}, err
+		return nil, err
 	}
-	return pangkat, nil
+	return &pangkat, nil
 }
 
-func (r *pangkatRepository) Save(ctx context.Context, pangkat model.Pangkat) error {
-	return r.DB.WithContext(ctx).Create(&pangkat).Error
+func (r *pangkatRepository) Save(ctx context.Context, pangkat *model.Pangkat) error {
+	return r.DB.WithContext(ctx).Create(pangkat).Error
 }
 
 func (r *pangkatRepository) Update(ctx context.Context, id int64, pangkat map[string]any) error {

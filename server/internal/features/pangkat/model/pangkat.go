@@ -10,7 +10,7 @@ import (
 type Pangkat struct {
 	ID        int64      `json:"id"`
 	Nama      string     `json:"nama"`
-	CreatedAt *time.Time `json:"created_at"`
+	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at" gorm:"autoUpdateTime:false"`
 }
 
@@ -20,9 +20,9 @@ func (Pangkat) TableName() string {
 
 type PangkatRepository interface {
 	GetAll(ctx context.Context, page, size int) ([]Pangkat, error)
-	Save(ctx context.Context, pangkat Pangkat) error
-	GetById(ctx context.Context, id int64) (Pangkat, error)
-	GetByName(ctx context.Context, name string) (Pangkat, error)
+	Save(ctx context.Context, pangkat *Pangkat) error
+	GetById(ctx context.Context, id int64) (*Pangkat, error)
+	GetByName(ctx context.Context, name string) (*Pangkat, error)
 	Update(ctx context.Context, id int64, pangkat map[string]any) error
 	Delete(ctx context.Context, id int64) error
 	Count(ctx context.Context) (int64, error)

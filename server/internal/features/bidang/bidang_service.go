@@ -39,7 +39,7 @@ func (b *bidangService) Save(ctx context.Context, request dto.BidangRequest) err
 	if !isUnique {
 		return gorm.ErrDuplicatedKey
 	}
-	bidang := model.Bidang{Nama: request.Nama}
+	bidang := &model.Bidang{Nama: request.Nama}
 	return b.repo.Save(ctx, bidang)
 }
 
@@ -48,7 +48,10 @@ func (b *bidangService) GetById(ctx context.Context, id int64) (dto.BidangRespon
 	if err != nil {
 		return dto.BidangResponse{}, err
 	}
-	return mapper.MapToBidangResponse(bidang), nil
+	if bidang == nil {
+		return dto.BidangResponse{}, gorm.ErrRecordNotFound
+	}
+	return mapper.MapToBidangResponse(*bidang), nil
 }
 
 func (b *bidangService) GetByName(ctx context.Context, name string) (dto.BidangResponse, error) {
@@ -56,13 +59,19 @@ func (b *bidangService) GetByName(ctx context.Context, name string) (dto.BidangR
 	if err != nil {
 		return dto.BidangResponse{}, err
 	}
-	return mapper.MapToBidangResponse(bidang), nil
+	if bidang == nil {
+		return dto.BidangResponse{}, gorm.ErrRecordNotFound
+	}
+	return mapper.MapToBidangResponse(*bidang), nil
 }
 
 func (b *bidangService) Update(ctx context.Context, id int64, request dto.BidangRequest) error {
 	existing, err := b.repo.GetById(ctx, id)
 	if err != nil {
 		return err
+	}
+	if existing == nil {
+		return gorm.ErrRecordNotFound
 	}
 	if !strings.EqualFold(existing.Nama, request.Nama) {
 		isUnique, err := b.repo.IsBidangUnique(ctx, request.Nama)
@@ -81,8 +90,12 @@ func (b *bidangService) Update(ctx context.Context, id int64, request dto.Bidang
 }
 
 func (b *bidangService) Delete(ctx context.Context, id int64) error {
-	if _, err := b.repo.GetById(ctx, id); err != nil {
+	bidang, err := b.repo.GetById(ctx, id)
+	if err != nil {
 		return err
+	}
+	if bidang == nil {
+		return gorm.ErrRecordNotFound
 	}
 	return b.repo.Delete(ctx, id)
 }

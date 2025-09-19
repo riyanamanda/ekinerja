@@ -24,24 +24,24 @@ func (j *jabatanRepository) GetAll(ctx context.Context, page int, size int) ([]m
 	return list, nil
 }
 
-func (j *jabatanRepository) GetById(ctx context.Context, id int) (model.Jabatan, error) {
+func (j *jabatanRepository) GetById(ctx context.Context, id int) (*model.Jabatan, error) {
 	var jabatan model.Jabatan
 	if err := j.DB.WithContext(ctx).First(&jabatan, id).Error; err != nil {
-		return model.Jabatan{}, err
+		return nil, err
 	}
-	return jabatan, nil
+	return &jabatan, nil
 }
 
-func (j *jabatanRepository) GetByName(ctx context.Context, name string) (model.Jabatan, error) {
+func (j *jabatanRepository) GetByName(ctx context.Context, name string) (*model.Jabatan, error) {
 	var jabatan model.Jabatan
 	if err := j.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", name).First(&jabatan).Error; err != nil {
-		return model.Jabatan{}, err
+		return nil, err
 	}
-	return jabatan, nil
+	return &jabatan, nil
 }
 
-func (j *jabatanRepository) Save(ctx context.Context, jabatan model.Jabatan) error {
-	return j.DB.WithContext(ctx).Create(&jabatan).Error
+func (j *jabatanRepository) Save(ctx context.Context, jabatan *model.Jabatan) error {
+	return j.DB.WithContext(ctx).Create(jabatan).Error
 }
 
 func (j *jabatanRepository) Update(ctx context.Context, id int, jabatan map[string]any) error {

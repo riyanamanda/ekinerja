@@ -10,7 +10,7 @@ import (
 type Bidang struct {
 	ID        int        `json:"id"`
 	Nama      string     `json:"nama"`
-	CreatedAt *time.Time `json:"created_at"`
+	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at" gorm:"autoUpdateTime:false"`
 }
 
@@ -20,9 +20,9 @@ func (Bidang) TableName() string {
 
 type BidangRepository interface {
 	GetAll(ctx context.Context, page int, size int) ([]Bidang, error)
-	Save(ctx context.Context, bidang Bidang) error
-	GetById(ctx context.Context, id int64) (Bidang, error)
-	GetByName(ctx context.Context, name string) (Bidang, error)
+	Save(ctx context.Context, bidang *Bidang) error
+	GetById(ctx context.Context, id int64) (*Bidang, error)
+	GetByName(ctx context.Context, name string) (*Bidang, error)
 	Update(ctx context.Context, id int64, bidang map[string]any) error
 	Delete(ctx context.Context, id int64) error
 	Count(ctx context.Context) (int64, error)

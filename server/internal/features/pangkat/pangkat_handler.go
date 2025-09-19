@@ -79,12 +79,12 @@ func (h *pangkatHandler) GetById(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
 	}
 	pangkat, err := h.service.GetById(ctx, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusOK, map[string]any{})
+			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Pangkat tidak ditemukan"))
 		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}

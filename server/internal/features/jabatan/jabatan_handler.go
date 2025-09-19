@@ -81,7 +81,7 @@ func (h *jabatanHandler) GetById(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
 	}
 	jabatan, err := h.service.GetById(ctx, id)
 	if err != nil {
@@ -100,7 +100,7 @@ func (h *jabatanHandler) Update(c echo.Context) error {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
 	}
 	var request dto.JabatanRequest
 	if err := c.Bind(&request); err != nil {
