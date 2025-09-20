@@ -20,7 +20,6 @@ type AtasanRepository interface {
 	GetAll(ctx context.Context, page int, size int) ([]Atasan, error)
 	Save(ctx context.Context, atasan *Atasan) error
 	GetByID(ctx context.Context, id int) (*Atasan, error)
-	GetByName(ctx context.Context, name string) (*Atasan, error)
 	Update(ctx context.Context, id int, atasan map[string]any) error
 	Delete(ctx context.Context, id int) error
 	Count(ctx context.Context) (int64, error)

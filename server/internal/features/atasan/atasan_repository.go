@@ -38,14 +38,6 @@ func (a *atasanRepository) GetByID(ctx context.Context, id int) (*model.Atasan, 
 	return &atasan, nil
 }
 
-func (a *atasanRepository) GetByName(ctx context.Context, nama string) (*model.Atasan, error) {
-	var atasan model.Atasan
-	if err := a.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", nama).First(&atasan).Error; err != nil {
-		return nil, err
-	}
-	return &atasan, nil
-}
-
 func (a *atasanRepository) Update(ctx context.Context, id int, atasan map[string]any) error {
 	return a.DB.WithContext(ctx).Model(&model.Atasan{}).Where("id = ?", id).Updates(atasan).Error
 }

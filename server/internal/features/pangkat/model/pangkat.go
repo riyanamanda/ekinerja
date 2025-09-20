@@ -30,7 +30,7 @@ type PangkatRepository interface {
 
 type PangkatService interface {
 	GetAll(ctx context.Context, page, size int) ([]dto.PangkatResponse, int64, error)
-	Save(ctx context.Context, request dto.PangkatRequest) error
+	Create(ctx context.Context, request dto.PangkatRequest) error
 	GetById(ctx context.Context, id int64) (*dto.PangkatResponse, error)
 	Update(ctx context.Context, id int64, request dto.PangkatRequest) error
 	Delete(ctx context.Context, id int64) error

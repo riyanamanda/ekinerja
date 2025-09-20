@@ -30,8 +30,8 @@ type BidangRepository interface {
 
 type BidangService interface {
 	GetAll(ctx context.Context, page int, size int) ([]dto.BidangResponse, int64, error)
+	Create(ctx context.Context, request dto.BidangRequest) error
 	GetById(ctx context.Context, id int64) (*dto.BidangResponse, error)
-	Save(ctx context.Context, request dto.BidangRequest) error
 	Update(ctx context.Context, id int64, request dto.BidangRequest) error
 	Delete(ctx context.Context, id int64) error
 }

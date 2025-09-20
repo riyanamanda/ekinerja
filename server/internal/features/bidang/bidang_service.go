@@ -32,7 +32,7 @@ func (b *bidangService) GetAll(ctx context.Context, page int, size int) ([]dto.B
 	return mapper.MapToListResponse(list), count, nil
 }
 
-func (b *bidangService) Save(ctx context.Context, request dto.BidangRequest) error {
+func (b *bidangService) Create(ctx context.Context, request dto.BidangRequest) error {
 	isUnique, err := b.repo.IsBidangUnique(ctx, request.Nama)
 	if err != nil {
 		return err

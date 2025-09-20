@@ -43,7 +43,7 @@ func (j *jabatanService) GetById(ctx context.Context, id int) (*dto.JabatanRespo
 	return mapper.MapToJabatanResponse(jabatan), nil
 }
 
-func (j *jabatanService) Save(ctx context.Context, request dto.JabatanRequest) error {
+func (j *jabatanService) Create(ctx context.Context, request dto.JabatanRequest) error {
 	isUnique, err := j.repo.IsJabatanUnique(ctx, request.Nama)
 	if err != nil {
 		return err

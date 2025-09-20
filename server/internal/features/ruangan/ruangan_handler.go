@@ -87,7 +87,7 @@ func (h *ruanganHandler) GetByID(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
 	if ruangan == nil {
-		return c.JSON(http.StatusOK, map[string]any{})
+		return c.JSON(http.StatusNoContent, map[string]any{})
 	}
 	return c.JSON(http.StatusOK, ruangan)
 }
@@ -140,5 +140,5 @@ func (h *ruanganHandler) Delete(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.JSON(http.StatusOK, nil)
 }

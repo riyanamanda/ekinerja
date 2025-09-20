@@ -65,7 +65,7 @@ func (h *bidangHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
-	if err := h.service.Save(ctx, request); err != nil {
+	if err := h.service.Create(ctx, request); err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return c.JSON(http.StatusConflict, response.CreateErrorResponse("Bidang dengan nama tersebut sudah ada"))
 		}
@@ -88,7 +88,7 @@ func (h *bidangHandler) GetById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
 	if bidang == nil {
-		return c.JSON(http.StatusOK, map[string]any{})
+		return c.JSON(http.StatusNoContent, map[string]any{})
 	}
 	return c.JSON(http.StatusOK, bidang)
 }

@@ -32,7 +32,7 @@ func (p *pangkatService) GetAll(ctx context.Context, page, size int) ([]dto.Pang
 	return mapper.MapToListResponse(list), total, nil
 }
 
-func (p *pangkatService) Save(ctx context.Context, request dto.PangkatRequest) error {
+func (p *pangkatService) Create(ctx context.Context, request dto.PangkatRequest) error {
 	isUnique, err := p.repo.IsPangkatUnique(ctx, request.Nama)
 	if err != nil {
 		return err

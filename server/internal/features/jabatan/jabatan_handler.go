@@ -64,7 +64,7 @@ func (h *jabatanHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
-	if err := h.service.Save(ctx, request); err != nil {
+	if err := h.service.Create(ctx, request); err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("jabatan dengan nama tersebut sudah ada"))
 		}
@@ -88,7 +88,7 @@ func (h *jabatanHandler) GetById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
 	if jabatan == nil {
-		return c.JSON(http.StatusOK, map[string]any{})
+		return c.JSON(http.StatusNoContent, map[string]any{})
 	}
 	return c.JSON(http.StatusOK, jabatan)
 }
@@ -136,5 +136,5 @@ func (h *jabatanHandler) Delete(c echo.Context) error {
 		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusAccepted, response.CreateSuccessResponse("jabatan berhasil dihapus"))
+	return c.JSON(http.StatusOK, response.CreateSuccessResponse("jabatan berhasil dihapus"))
 }

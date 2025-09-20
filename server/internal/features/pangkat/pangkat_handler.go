@@ -63,7 +63,7 @@ func (h *pangkatHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
-	if err := h.service.Save(ctx, request); err != nil {
+	if err := h.service.Create(ctx, request); err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return c.JSON(http.StatusConflict, response.CreateErrorResponse("Pangkat dengan nama tersebut sudah ada"))
 		}
@@ -86,7 +86,7 @@ func (h *pangkatHandler) GetById(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
 	if pangkat == nil {
-		return c.JSON(http.StatusOK, map[string]any{})
+		return c.JSON(http.StatusNoContent, map[string]any{})
 	}
 	return c.JSON(http.StatusOK, pangkat)
 }

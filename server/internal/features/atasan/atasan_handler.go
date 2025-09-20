@@ -86,7 +86,7 @@ func (h *atasanHandler) GetByID(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
 	if atasan == nil {
-		return c.JSON(http.StatusOK, map[string]any{})
+		return c.JSON(http.StatusNoContent, map[string]any{})
 	}
 	return c.JSON(http.StatusOK, atasan)
 }

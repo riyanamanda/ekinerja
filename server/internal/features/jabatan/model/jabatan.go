@@ -30,7 +30,7 @@ type JabatanRepository interface {
 
 type JabatanService interface {
 	GetAll(ctx context.Context, page, size int) ([]dto.JabatanResponse, int64, error)
-	Save(ctx context.Context, request dto.JabatanRequest) error
+	Create(ctx context.Context, request dto.JabatanRequest) error
 	GetById(ctx context.Context, id int) (*dto.JabatanResponse, error)
 	Update(ctx context.Context, id int, request dto.JabatanRequest) error
 	Delete(ctx context.Context, id int) error
