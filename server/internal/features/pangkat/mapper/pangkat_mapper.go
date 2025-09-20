@@ -8,13 +8,13 @@ import (
 func MapToListResponse(list []model.Pangkat) []dto.PangkatResponse {
 	responses := make([]dto.PangkatResponse, len(list))
 	for i, pangkat := range list {
-		responses[i] = MapToPangkatResponse(pangkat)
+		responses[i] = *MapToPangkatResponse(&pangkat)
 	}
 	return responses
 }
 
-func MapToPangkatResponse(pangkat model.Pangkat) dto.PangkatResponse {
-	return dto.PangkatResponse{
+func MapToPangkatResponse(pangkat *model.Pangkat) *dto.PangkatResponse {
+	return &dto.PangkatResponse{
 		ID:        pangkat.ID,
 		Nama:      pangkat.Nama,
 		CreatedAt: pangkat.CreatedAt,

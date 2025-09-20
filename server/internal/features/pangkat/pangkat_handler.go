@@ -83,10 +83,10 @@ func (h *pangkatHandler) GetById(c echo.Context) error {
 	}
 	pangkat, err := h.service.GetById(ctx, id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Pangkat tidak ditemukan"))
-		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
+	}
+	if pangkat == nil {
+		return c.JSON(http.StatusOK, map[string]any{})
 	}
 	return c.JSON(http.StatusOK, pangkat)
 }

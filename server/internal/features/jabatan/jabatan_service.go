@@ -2,6 +2,7 @@ package jabatan
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -31,26 +32,15 @@ func (j *jabatanService) GetAll(ctx context.Context, page int, size int) ([]dto.
 	return mapper.MapToListResponse(list), count, nil
 }
 
-func (j *jabatanService) GetById(ctx context.Context, id int) (dto.JabatanResponse, error) {
+func (j *jabatanService) GetById(ctx context.Context, id int) (*dto.JabatanResponse, error) {
 	jabatan, err := j.repo.GetById(ctx, id)
 	if err != nil {
-		return dto.JabatanResponse{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
 	}
-	if jabatan == nil {
-		return dto.JabatanResponse{}, gorm.ErrRecordNotFound
-	}
-	return mapper.MapToJabatanResponse(*jabatan), nil
-}
-
-func (j *jabatanService) GetByName(ctx context.Context, name string) (dto.JabatanResponse, error) {
-	jabatan, err := j.repo.GetByName(ctx, name)
-	if err != nil {
-		return dto.JabatanResponse{}, err
-	}
-	if jabatan == nil {
-		return dto.JabatanResponse{}, gorm.ErrRecordNotFound
-	}
-	return mapper.MapToJabatanResponse(*jabatan), nil
+	return mapper.MapToJabatanResponse(jabatan), nil
 }
 
 func (j *jabatanService) Save(ctx context.Context, request dto.JabatanRequest) error {

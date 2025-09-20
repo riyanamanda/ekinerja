@@ -2,6 +2,7 @@ package bidang
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -43,26 +44,15 @@ func (b *bidangService) Save(ctx context.Context, request dto.BidangRequest) err
 	return b.repo.Save(ctx, bidang)
 }
 
-func (b *bidangService) GetById(ctx context.Context, id int64) (dto.BidangResponse, error) {
+func (b *bidangService) GetById(ctx context.Context, id int64) (*dto.BidangResponse, error) {
 	bidang, err := b.repo.GetById(ctx, id)
 	if err != nil {
-		return dto.BidangResponse{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
 	}
-	if bidang == nil {
-		return dto.BidangResponse{}, gorm.ErrRecordNotFound
-	}
-	return mapper.MapToBidangResponse(*bidang), nil
-}
-
-func (b *bidangService) GetByName(ctx context.Context, name string) (dto.BidangResponse, error) {
-	bidang, err := b.repo.GetByName(ctx, name)
-	if err != nil {
-		return dto.BidangResponse{}, err
-	}
-	if bidang == nil {
-		return dto.BidangResponse{}, gorm.ErrRecordNotFound
-	}
-	return mapper.MapToBidangResponse(*bidang), nil
+	return mapper.MapToBidangResponse(bidang), nil
 }
 
 func (b *bidangService) Update(ctx context.Context, id int64, request dto.BidangRequest) error {

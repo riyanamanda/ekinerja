@@ -36,14 +36,6 @@ func (b *bidangRepository) GetById(ctx context.Context, id int64) (*model.Bidang
 	return &bidang, nil
 }
 
-func (b *bidangRepository) GetByName(ctx context.Context, name string) (*model.Bidang, error) {
-	var bidang model.Bidang
-	if err := b.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", name).First(&bidang).Error; err != nil {
-		return nil, err
-	}
-	return &bidang, nil
-}
-
 func (b *bidangRepository) Update(ctx context.Context, id int64, bidang map[string]any) error {
 	return b.DB.WithContext(ctx).Model(&model.Bidang{}).Where("id = ?", id).Updates(bidang).Error
 }

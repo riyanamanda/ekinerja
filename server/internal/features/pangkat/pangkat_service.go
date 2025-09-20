@@ -2,6 +2,7 @@ package pangkat
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -43,15 +44,15 @@ func (p *pangkatService) Save(ctx context.Context, request dto.PangkatRequest) e
 	return p.repo.Save(ctx, pangkat)
 }
 
-func (p *pangkatService) GetById(ctx context.Context, id int64) (dto.PangkatResponse, error) {
+func (p *pangkatService) GetById(ctx context.Context, id int64) (*dto.PangkatResponse, error) {
 	pangkat, err := p.repo.GetById(ctx, id)
 	if err != nil {
-		return dto.PangkatResponse{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
 	}
-	if pangkat == nil {
-		return dto.PangkatResponse{}, gorm.ErrRecordNotFound
-	}
-	return mapper.MapToPangkatResponse(*pangkat), nil
+	return mapper.MapToPangkatResponse(pangkat), nil
 }
 
 func (p *pangkatService) Update(ctx context.Context, id int64, request dto.PangkatRequest) error {

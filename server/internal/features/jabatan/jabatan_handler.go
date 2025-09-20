@@ -85,10 +85,10 @@ func (h *jabatanHandler) GetById(c echo.Context) error {
 	}
 	jabatan, err := h.service.GetById(ctx, id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("jabatan tidak ditemukan"))
-		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
+	}
+	if jabatan == nil {
+		return c.JSON(http.StatusOK, map[string]any{})
 	}
 	return c.JSON(http.StatusOK, jabatan)
 }
