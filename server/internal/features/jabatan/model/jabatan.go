@@ -22,7 +22,6 @@ type JabatanRepository interface {
 	GetAll(ctx context.Context, page, size int) ([]Jabatan, error)
 	Save(ctx context.Context, jabatan *Jabatan) error
 	GetById(ctx context.Context, id int) (*Jabatan, error)
-	GetByName(ctx context.Context, name string) (*Jabatan, error)
 	Update(ctx context.Context, id int, jabatan map[string]any) error
 	Delete(ctx context.Context, id int) error
 	Count(ctx context.Context) (int64, error)

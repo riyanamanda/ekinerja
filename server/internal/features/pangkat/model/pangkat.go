@@ -22,7 +22,6 @@ type PangkatRepository interface {
 	GetAll(ctx context.Context, page, size int) ([]Pangkat, error)
 	Save(ctx context.Context, pangkat *Pangkat) error
 	GetById(ctx context.Context, id int64) (*Pangkat, error)
-	GetByName(ctx context.Context, name string) (*Pangkat, error)
 	Update(ctx context.Context, id int64, pangkat map[string]any) error
 	Delete(ctx context.Context, id int64) error
 	Count(ctx context.Context) (int64, error)

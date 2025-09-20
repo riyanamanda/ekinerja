@@ -32,14 +32,6 @@ func (j *jabatanRepository) GetById(ctx context.Context, id int) (*model.Jabatan
 	return &jabatan, nil
 }
 
-func (j *jabatanRepository) GetByName(ctx context.Context, name string) (*model.Jabatan, error) {
-	var jabatan model.Jabatan
-	if err := j.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", name).First(&jabatan).Error; err != nil {
-		return nil, err
-	}
-	return &jabatan, nil
-}
-
 func (j *jabatanRepository) Save(ctx context.Context, jabatan *model.Jabatan) error {
 	return j.DB.WithContext(ctx).Create(jabatan).Error
 }

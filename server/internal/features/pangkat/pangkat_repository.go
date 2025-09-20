@@ -32,14 +32,6 @@ func (r *pangkatRepository) GetById(ctx context.Context, id int64) (*model.Pangk
 	return &pangkat, nil
 }
 
-func (r *pangkatRepository) GetByName(ctx context.Context, name string) (*model.Pangkat, error) {
-	var pangkat model.Pangkat
-	if err := r.DB.WithContext(ctx).Where("LOWER(nama) = LOWER(?)", name).First(&pangkat).Error; err != nil {
-		return nil, err
-	}
-	return &pangkat, nil
-}
-
 func (r *pangkatRepository) Save(ctx context.Context, pangkat *model.Pangkat) error {
 	return r.DB.WithContext(ctx).Create(pangkat).Error
 }
