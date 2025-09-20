@@ -1,4 +1,4 @@
-package pangkat
+package ruangan
 
 import (
 	"context"
@@ -8,28 +8,28 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/riyanamanda/ekinerja/internal/features/pangkat/dto"
-	"github.com/riyanamanda/ekinerja/internal/features/pangkat/model"
+	"github.com/riyanamanda/ekinerja/internal/features/ruangan/dto"
+	"github.com/riyanamanda/ekinerja/internal/features/ruangan/model"
 	"github.com/riyanamanda/ekinerja/internal/shared/response"
 	"github.com/riyanamanda/ekinerja/internal/shared/validation"
 	"gorm.io/gorm"
 )
 
-type pangkatHandler struct {
-	service model.PangkatService
+type ruanganHandler struct {
+	service model.RuanganService
 }
 
-func NewPangkatHandler(app *echo.Group, service model.PangkatService) {
-	Handler := &pangkatHandler{service: service}
+func NewRuanganHandler(app *echo.Group, service model.RuanganService) {
+	handler := &ruanganHandler{service: service}
 
-	app.GET("/pangkat", Handler.GetAll)
-	app.POST("/pangkat", Handler.Create)
-	app.GET("/pangkat/:id", Handler.GetById)
-	app.PUT("/pangkat/:id", Handler.Update)
-	app.DELETE("/pangkat/:id", Handler.Delete)
+	app.GET("/ruangan", handler.GetAll)
+	app.POST("/ruangan", handler.Create)
+	app.GET("/ruangan/:id", handler.GetByID)
+	app.PUT("/ruangan/:id", handler.Update)
+	app.DELETE("/ruangan/:id", handler.Delete)
 }
 
-func (h *pangkatHandler) GetAll(c echo.Context) error {
+func (h *ruanganHandler) GetAll(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
@@ -42,7 +42,6 @@ func (h *pangkatHandler) GetAll(c echo.Context) error {
 	if pp, err := strconv.Atoi(sizeStr); err == nil && pp > 0 {
 		size = pp
 	}
-
 	list, total, err := h.service.GetAll(ctx, page, size)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
@@ -50,11 +49,11 @@ func (h *pangkatHandler) GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, response.CreatePaginationResponse(list, page, size, total))
 }
 
-func (h *pangkatHandler) Create(c echo.Context) error {
+func (h *ruanganHandler) Create(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
-	var request dto.PangkatRequest
+	var request dto.RuanganRequest
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
 	}
@@ -63,45 +62,47 @@ func (h *pangkatHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
-	if err := h.service.Save(ctx, request); err != nil {
+	if err := h.service.Create(ctx, request); err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return c.JSON(http.StatusConflict, response.CreateErrorResponse("Pangkat dengan nama tersebut sudah ada"))
+			return c.JSON(http.StatusConflict, response.CreateErrorResponse("Ruangan dengan nama tersebut sudah ada"))
 		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusCreated, response.CreateSuccessResponse("Pangkat berhasil ditambahkan"))
+
+	return c.JSON(http.StatusCreated, response.CreateSuccessResponse("Ruangan berhasil ditambahkan"))
 }
 
-func (h *pangkatHandler) GetById(c echo.Context) error {
+func (h *ruanganHandler) GetByID(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
 	idStr := c.Param("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("Invalid ID"))
 	}
-	pangkat, err := h.service.GetById(ctx, id)
+
+	ruangan, err := h.service.GetById(ctx, id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	if pangkat == nil {
+	if ruangan == nil {
 		return c.JSON(http.StatusOK, map[string]any{})
 	}
-	return c.JSON(http.StatusOK, pangkat)
+	return c.JSON(http.StatusOK, ruangan)
 }
 
-func (h *pangkatHandler) Update(c echo.Context) error {
+func (h *ruanganHandler) Update(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
 	idStr := c.Param("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("Invalid ID"))
 	}
 
-	var request dto.PangkatRequest
+	var request dto.RuanganRequest
 	if err := c.Bind(&request); err != nil {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(err.Error()))
 	}
@@ -110,32 +111,34 @@ func (h *pangkatHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse(validationErrors))
 	}
 
-	if err = h.service.Update(ctx, id, request); err != nil {
+	if err := h.service.Update(ctx, id, request); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Pangkat tidak ditemukan"))
+			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Ruangan tidak ditemukan"))
 		} else if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return c.JSON(http.StatusConflict, response.CreateErrorResponse("Pangkat dengan nama tersebut sudah ada"))
+			return c.JSON(http.StatusConflict, response.CreateErrorResponse("Ruangan dengan nama tersebut sudah ada"))
 		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusAccepted, response.CreateSuccessResponse("Pangkat berhasil diperbaharui"))
+
+	return c.JSON(http.StatusAccepted, response.CreateSuccessResponse("Ruangan berhasil diperbarui"))
 }
 
-func (h *pangkatHandler) Delete(c echo.Context) error {
+func (h *ruanganHandler) Delete(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
 
 	idStr := c.Param("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("invalid id"))
+		return c.JSON(http.StatusBadRequest, response.CreateErrorResponse("Invalid ID"))
 	}
 
-	if err = h.service.Delete(ctx, id); err != nil {
+	if err := h.service.Delete(ctx, id); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Pangkat tidak ditemukan"))
+			return c.JSON(http.StatusNotFound, response.CreateErrorResponse("Ruangan tidak ditemukan"))
 		}
 		return c.JSON(http.StatusInternalServerError, response.CreateErrorResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, response.CreateSuccessResponse("Pangkat berhasil dihapus"))
+
+	return c.JSON(http.StatusNoContent, nil)
 }
