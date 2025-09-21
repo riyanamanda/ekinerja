@@ -8,6 +8,7 @@ import (
 	"github.com/riyanamanda/ekinerja/internal/features/bidang"
 	"github.com/riyanamanda/ekinerja/internal/features/jabatan"
 	"github.com/riyanamanda/ekinerja/internal/features/pangkat"
+	"github.com/riyanamanda/ekinerja/internal/features/role"
 	"github.com/riyanamanda/ekinerja/internal/features/ruangan"
 	"github.com/riyanamanda/ekinerja/internal/shared/config"
 	"github.com/riyanamanda/ekinerja/internal/shared/database"
@@ -40,4 +41,8 @@ func RouteSetups(app *echo.Echo, cfg *config.Config) {
 	ruanganRepository := ruangan.NewRuanganRepository(conn)
 	ruanganService := ruangan.NewRuanganService(ruanganRepository)
 	ruangan.NewRuanganHandler(api, ruanganService)
+
+	roleRepository := role.NewRoleRepository(conn)
+	roleService := role.NewRoleService(roleRepository)
+	role.NewRoleHandler(api, roleService)
 }
